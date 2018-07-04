@@ -1,0 +1,415 @@
+{{import "layout.html"}}
+{{/*{{define "custom_css"}}*/}}
+{{/*<style>*/}}
+  {{/*.inputForm{*/}}
+    {{/*width: 500px;*/}}
+  {{/*}*/}}
+{{/*</style>*/}}
+{{/*{{end}}*/}}
+{{template "layout" .}}
+{{define "body"}}
+
+<script>
+  function back_up() {
+    $(window).attr('location', '/v1/ixiao/register/manager?cert={{.Data.cert}}&start={{.Data.start}}');
+  }
+
+</script>
+<input class="edit-lock" type="file" id="file" style="display:none;" imgId="" onchange="filechange(event)">
+<h1 class="page-header">车易销注册销售管理</h1>
+<h2 class="sub-header">
+  <button type="button" onclick="back_up()" class="btn btn-secondary btn-sm">
+    返回
+  </button>
+  <button type="button" onclick="can_edit()" class="btn btn-secondary btn-sm">
+    修改
+  </button>
+  <button type="button" onclick="cancel_edit()" class="btn btn-secondary btn-sm">
+    取消
+  </button>
+  <button type="button" onclick="save_edit()" class="btn btn-secondary btn-sm">
+    保存
+  </button>
+</h2>
+<div class="table-responsive">
+  <table class="table"  style="table-layout: fixed">
+    <thead class="bg-success">
+    <tr>
+      <th colspan="4">用户信息: </th>
+    </tr>
+    </thead>
+    <tbody class="table-success">
+    <tr id="userInfo">
+      <td colspan="2">
+        <div class="form-label-group">
+          <p class="font-weight-bold">头像： </p>
+          <img
+            data-src="holder.js/50x50"
+            id="avatar"
+            class="rounded-circle imgUpload" alt="200x200"
+          {{/*src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1529664482834&di=ff9f092e23cc48596b87084a9cfc9435&imgtype=0&src=http%3A%2F%2Fpic2.cxtuku.com%2F00%2F05%2F13%2Fb845ec14e524.jpg"*/}}
+            src="{{.Data.saler.Avatar}}"
+            data-holder-rendered="true"
+            style="width: 50px; height: 50px;">
+        </div>
+      </td>
+      <td colspan="2">
+        <div class="form-label-group">
+          <p class="font-weight-bold">姓名： </p>
+          <input id="name" class="edit-lock font-weight-normal" disabled="disabled"  value="{{.Data.saler.Name}}">
+        </div>
+      </td>
+    </tr>
+    <tr id="userInfo">
+      <td colspan="2">
+        <div class="form-label-group">
+          <p class="font-weight-bold">联系地址： </p>
+          <input id="contactAddress" class="edit-lock font-weight-normal inputForm" disabled="disabled" value="{{.Data.saler.Address}}">
+        </div>
+      </td>
+      <td colspan="2">
+        <div class="form-label-group">
+          <p class="font-weight-bold">联系方式： </p>
+          <input id="contactMethod" class="edit-lock font-weight-normal" disabled="disabled" value="{{if ne .Data.saler.Phone 0}}{{.Data.saler.Phone}}{{end}}">
+        </div>
+      </td>
+    </tr>
+    </tbody>
+  {{if or (eq .Data.saler.Role 1) (eq .Data.saler.Role 2)}}
+    <thead class="bg-danger">
+    <tr>
+      <th colspan="4">认证信息: </th>
+    </tr>
+    </thead>
+    <tbody class="table-danger" >
+    <tr id="userInfo">
+      <td colspan="4">
+        <div class="form-label-group">
+          <p class="font-weight-bold">所属区域： </p>
+          <select class="edit-lock" disabled="disabled" onclick="get_city()" id="selectProvince"  >
+            <option value="0">--请选择省份--</option>
+          </select>
+          <select class="edit-lock" disabled="disabled"  id="selectCity"  >
+            <option value="0">--请选择城市--</option>
+          </select>
+          <p class="font-weight-normal">{{.Data.saler.CityName}}</p>
+        </div>
+      </td>
+
+    </tr>
+    <tr id="userInfo">
+      <td colspan="4">
+        <div class="form-label-group">
+          <p class="font-weight-bold">资质上传： </p>
+          <img data-src="holder.js/100x100"
+               id="busLicence"
+               class="rounded imgUpload" alt="100x100"
+          {{/*src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1529664482834&di=ff9f092e23cc48596b87084a9cfc9435&imgtype=0&src=http%3A%2F%2Fpic2.cxtuku.com%2F00%2F05%2F13%2Fb845ec14e524.jpg"*/}}
+               src="{{.Data.dealer.BusLicence}}"
+               data-holder-rendered="true"
+               style="width: 100px; height: 100px;">
+        </div>
+      </td>
+    </tr>
+    </tbody>
+
+    <thead class="bg-primary">
+    <tr>
+      <th colspan="4">门店信息: </th>
+    </tr>
+    </thead>
+    <tbody class="table-primary" >
+    <tr id="userInfo">
+      <td >
+        <div class="form-label-group">
+          <p class="font-weight-bold">门头： </p>
+          <img data-src="holder.js/100x100"
+               class="rounded imgUpload" alt="100x100"
+               id="picDoor"
+          {{/*src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1529664482834&di=ff9f092e23cc48596b87084a9cfc9435&imgtype=0&src=http%3A%2F%2Fpic2.cxtuku.com%2F00%2F05%2F13%2Fb845ec14e524.jpg"*/}}
+               src="{{.Data.dealer.PicDoor}}"
+               data-holder-rendered="true"
+               style="width: 100px; height: 100px;">
+        </div>
+      </td>
+      <td >
+        <div class="form-label-group">
+          <p class="font-weight-bold">展厅： </p>
+          <img data-src="holder.js/100x100"
+               class="rounded imgUpload" alt="100x100"
+               id="picShow"
+          {{/*src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1529664482834&di=ff9f092e23cc48596b87084a9cfc9435&imgtype=0&src=http%3A%2F%2Fpic2.cxtuku.com%2F00%2F05%2F13%2Fb845ec14e524.jpg"*/}}
+               src="{{.Data.dealer.PicShow}}"
+               data-holder-rendered="true"
+               style="width: 100px; height: 100px;">
+        </div>
+      </td>
+      <td >
+        <div class="form-label-group">
+          <p class="font-weight-bold">休息区： </p>
+          <img data-src="holder.js/100x100"
+               class="rounded imgUpload" alt="100x100"
+               id="picRest"
+          {{/*src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1529664482834&di=ff9f092e23cc48596b87084a9cfc9435&imgtype=0&src=http%3A%2F%2Fpic2.cxtuku.com%2F00%2F05%2F13%2Fb845ec14e524.jpg"*/}}
+               src="{{.Data.dealer.PicRest}}"
+               data-holder-rendered="true"
+               style="width: 100px; height: 100px;">
+        </div>
+      </td>
+      <td >
+        <div class="form-label-group">
+          <p class="font-weight-bold">其他： </p>
+          <img data-src="holder.js/100x100"
+               class="rounded imgUpload" alt="100x100"
+               id="picOther"
+          {{/*src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1529664482834&di=ff9f092e23cc48596b87084a9cfc9435&imgtype=0&src=http%3A%2F%2Fpic2.cxtuku.com%2F00%2F05%2F13%2Fb845ec14e524.jpg"*/}}
+               src="{{.Data.dealer.PicOther}}"
+               data-holder-rendered="true"
+               style="width: 100px; height: 100px;">
+        </div>
+      </td>
+    </tr>
+    <tr id="userInfo">
+      <td colspan="2">
+        <div class="form-label-group">
+          <p class="font-weight-bold">*门店名称： </p>
+          <input id="dealerName" disabled="disabled" class="edit-lock font-weight-normal" value="{{.Data.dealer.Name}}">
+        </div>
+      </td>
+      <td colspan="2">
+        <div class="form-label-group">
+          <p class="font-weight-bold">*公司全称： </p>
+          <input id="company" disabled="disabled" class="edit-lock font-weight-normal" value="{{.Data.dealer.Company}}">
+        </div>
+      </td>
+    </tr>
+    <tr id="userInfo">
+      <td colspan="2">
+        <div class="form-label-group">
+          <p class="font-weight-bold">*门店地址： </p>
+          <input id="dealerAddress" class="edit-lock font-weight-normal" disabled="disabled" value="{{.Data.dealer.Address}}">
+        </div>
+      </td>
+      <td colspan="2">
+        <div class="form-label-group">
+          <p class="font-weight-bold">*门店电话： </p>
+          <input id="dealerCall" class="edit-lock font-weight-normal" disabled="disabled" value="{{.Data.dealer.Call}}">
+        </div>
+      </td>
+    </tr>
+    <tr id="userInfo">
+      <td colspan="2">
+        <div class="form-label-group">
+          <p class="font-weight-bold">*负责人姓名： </p>
+          <input id="chName" class="edit-lock font-weight-normal" disabled="disabled" value="{{.Data.dealer.ChName}}">
+        </div>
+      </td>
+      <td colspan="2">
+        <div class="form-label-group">
+          <p class="font-weight-bold">*负责人电话： </p>
+          <input id="chPhone" class="edit-lock font-weight-normal" disabled="disabled" value="{{if ne .Data.dealer.Phone 0}}{{.Data.dealer.Phone}}
+          {{end}}">
+
+        </div>
+      </td>
+    </tr>
+    </tbody>
+  {{else if or (eq .Data.saler.Role 3) (eq .Data.saler.Role 4)}}
+    <thead class="bg-danger">
+    <tr>
+      <th colspan="4">认证信息: </th>
+    </tr>
+    </thead>
+    <tbody class="table-danger" >
+    <tr id="userInfo">
+      <td colspan="4">
+        <div class="form-label-group">
+          <p class="font-weight-bold">所属区域： </p>
+          <select class="edit-lock" disabled="disabled" onclick="get_city()" id="selectProvince"  >
+            <option value="0">--请选择省份--</option>
+          </select>
+          <select class="edit-lock" disabled="disabled"  id="selectCity"  >
+            <option value="0">--请选择城市--</option>
+          </select>
+          <p class="font-weight-normal">{{.Data.saler.CityName}}</p>
+        </div>
+      </td>
+    </tr>
+
+    <tr id="userInfo">
+      <td colspan="4">
+        <div class="form-label-group">
+          <p class="font-weight-bold">上传本人身份证照片： </p>
+          <img data-src="holder.js/100x100"
+               class="rounded imgUpload" alt="100x100"
+               id="IDFace"
+          {{/*src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1529664482834&di=ff9f092e23cc48596b87084a9cfc9435&imgtype=0&src=http%3A%2F%2Fpic2.cxtuku.com%2F00%2F05%2F13%2Fb845ec14e524.jpg"*/}}
+               src="{{.Data.saler.IDFace}}"
+               data-holder-rendered="true"
+               style="width: 100px; height: 100px;">
+          <img data-src="holder.js/100x100"
+               id="IDCon"
+               class="rounded imgUpload" alt="100x100"
+          {{/*src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1529664482834&di=ff9f092e23cc48596b87084a9cfc9435&imgtype=0&src=http%3A%2F%2Fpic2.cxtuku.com%2F00%2F05%2F13%2Fb845ec14e524.jpg"*/}}
+               src="{{.Data.saler.IDCon}}"
+               data-holder-rendered="true"
+               style="width: 100px; height: 100px;">
+        </div>
+      </td>
+    </tr>
+    </tbody>
+  {{end}}
+  </table>
+</div>
+<script>
+  function save_edit() {
+    var salerId = {{.Data.saler.Id}}
+    var role = {{.Data.saler.Role}};
+    var name = $("#name").val();
+    var contactAddress = $("#contactAddress").val();
+    var contactMethod = $("#contactMethod").val();
+    var avatar = $("#avatar").attr("src");
+    var cityId = $("#selectCity").select().val();
+    if (cityId=="0"){
+      alert("没有选择城市，将使用原来城市信息！");
+      cityId={{.Data.saler.City}}
+    }
+    console.log(name);
+    console.log(role);
+    if (role == 1 || role ==2 ){
+      var dealerId = {{.Data.dealer.Id}}
+      var dealerName = $("#dealerName").val();
+      var dealerCall = $("#dealerCall").val();
+      var dealerAddress = $("#dealerAddress").val();
+      var company = $("#company").val();
+      var chName = $("#chName").val();
+      var chPhone = $("#chPhone").val();
+      var picDoor = $("#picDoor").attr("src");
+      var picShow = $("#picShow").attr("src");
+      var picRest = $("#picRest").attr("src");
+      var picOther = $("#picOther").attr("src");
+      var busLicence = $("#busLicense").attr("src");
+      console.log("dealer");
+      $.ajax({url:"/v1/ixiao/register/info",
+        type:"POST",
+        data:{"role":"dealer","salerId":salerId,"name":name,"contactAddress":contactAddress,
+          "contactMethod":contactMethod,"dealerId":dealerId,"dealerName":dealerName,
+          "dealerCall":dealerCall,"dealerAddress":dealerAddress,"company":company,
+          "chName":chName,"chPhone":chPhone,"picDoor":picDoor,"picShow":picShow,
+          "picRest":picRest,"picOther":picOther,"busLicence":busLicence,"avatar":avatar,
+        "cityId":cityId},
+        success:function () {
+          alert("保存信息成功！");
+          console.log("ok!");
+          // back_up();
+        }
+      })
+    }
+    if (role == 3 || role ==4 ){
+      var IDFace = $("#IDFace").attr("src");
+      var IDCon = $("#IDCon").attr("src");
+      console.log("saler");
+      $.ajax({url:"/v1/ixiao/register/info",
+        type:"POST",
+        data:{"role":"saler","salerId":salerId,"name":name,"avatar":avatar,
+          "contactAddress":contactAddress, "contactMethod":contactMethod,
+          "IDFace":IDFace,"IDCon":IDCon, "cityId":cityId},
+        success:function () {
+          console.log("ok!");
+          back_up();
+        }
+      })
+    }
+    return
+  }
+
+  var mark = 0;
+  function can_edit() {
+    $(".edit-lock").removeAttr("disabled");
+    mark = 1
+  }
+  function cancel_edit() {
+    $(".edit-lock").attr("disabled","disabled");
+    mark = 0
+  }
+
+  $(".imgUpload").each(function(){
+    $(this).click(function(){
+      if (mark == 1){
+        var imgid = $(this).attr("id");
+        $("#file").attr("imgId",imgid);
+        $("#file").click();
+      }
+    })
+  });
+
+  var filechange=function(event){
+    var files = event.target.files, file;
+    var imgId = $("#file").attr("imgId");
+    var $thisImg = $("#"+imgId);
+
+    // console.log(thisImg, typeof thisImg);
+    if (files && files.length > 0) {
+      // catch file
+      file = files[0];
+
+      var fileType = file.type.split("/")[1].toLowerCase();
+      console.log(fileType);
+      if( !fileType.match(/png|jpg|jpeg/) ) {
+        alert('上传错误,文件格式必须为：png/jpg/jpeg');
+        return;
+      }
+      // verify size of img
+      if(file.size > 1024 * 1024 * 2) {
+        alert('图片大小不能超过 2MB!');
+        return false;
+      }
+
+      var formData = new FormData();
+      formData.append("img" , file);
+      formData.append("type" , imgId);
+      console.log('here');
+      $.ajax({
+        url: "/v1/ixiao/img/upload",
+        type: "POST",
+        data: formData ,
+        processData : false,
+        // dataType: 'text',
+        contentType : false,
+        success: function(res) {
+          console.log(res, typeof res);
+          console.log(res.imgUrl);
+          $thisImg.attr("src", res.imgUrl);
+        }
+      });
+    }
+  };
+  $("#selectProvince").change(function(){
+      var pid = $("#selectProvince").select().val();
+      console.log(pid, typeof pid);
+      $.get("/v1/ixiao/register/info/area",{'pid':pid},function (data) {
+        var $selectCity = $("#selectCity");
+        $selectCity.empty();
+        $selectCity.append($("<option></option>").val(0).html("--请选择城市--"));
+        for(var i=0;i<data.length;i++){
+          var k = Object.keys(data[i])[0];
+          $selectCity.append($("<option></option>").val(data[i][k]).html(k));
+        }
+      })
+    }
+  );
+
+
+
+  $(function () {
+    $.get("/v1/ixiao/register/info/area",function (data) {
+      var item = Object.keys(data[0]);
+      console.log(item[0], typeof item[0]);
+      for(var i=0;i<data.length;i++){
+        var k = Object.keys(data[i])[0];
+        $("#selectProvince").append($("<option></option>").val(data[i][k]).html(k));
+      }
+    })
+  });
+</script>
+{{end}}

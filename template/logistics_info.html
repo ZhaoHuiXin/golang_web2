@@ -1,0 +1,215 @@
+{{import "layout.html"}}
+{{template "layout" .}}
+{{define "body"}}
+<style>
+  .centerContent{
+    text-align:center;
+  }
+</style>
+<script>
+  function back_up() {
+    $(window).attr('location', '/v1/ixiao/logistics/bill?&start={{.Data.start}}');
+  }
+</script>
+{{$lg := .Data.lg}}
+<h1 class="page-header">车易销物流管理</h1>
+<h2 class="sub-header">
+  <button type="button" onclick="back_up()" class="btn btn-secondary btn-sm">
+    返回
+  </button>
+</h2>
+<div class="table-responsive">
+  <table class="table"  style="table-layout: fixed">
+    <thead class="bg-success">
+    <tr>
+      <th colspan="2">发车信息: </th>
+    </tr>
+    </thead>
+    <tbody class="table-success">
+    <tr id="userInfo" >
+      <td colspan="1" class="centerContent">
+        <div class="form-label-group">
+          <p class="font-weight-bold">发车城市： </p>
+        </div>
+      </td>
+      <td colspan="1" >
+        <div class="form-label-group">
+          <p class="font-weight-bold">{{$lg.CityIdBegin}}</p>
+        </div>
+      </td>
+    </tr>
+    <tr id="userInfo">
+      <td colspan="1" class="centerContent">
+        <div class="form-label-group">
+          <p class="font-weight-bold">收车城市： </p>
+        </div>
+      </td>
+      <td colspan="1">
+        <div class="form-label-group">
+          <p class="font-weight-bold">{{$lg.CityIdEnd}}</p>
+        </div>
+      </td>
+    </tr>
+    <tr id="userInfo">
+      <td colspan="1" class="centerContent">
+        <div class="form-label-group">
+          <p class="font-weight-bold">起运时间： </p>
+        </div>
+      </td>
+      <td colspan="1">
+        <div class="form-label-group">
+          <p class="font-weight-bold">{{$lg.SendTime}}</p>
+        </div>
+      </td>
+    </tr>
+    <tr id="userInfo">
+      <td colspan="1" class="centerContent">
+        <div class="form-label-group">
+          <p class="font-weight-bold">车辆类型： </p>
+        </div>
+      </td>
+      <td colspan="1">
+        <div class="form-label-group">
+          <p class="font-weight-bold">
+          {{if eq $lg.CarType 0}}大型suv
+          {{else if eq $lg.CarType 1}}标准suv
+          {{else}}标准轿车
+          {{end}}
+          </p>
+        </div>
+      </td>
+    </tr>
+    <tr id="userInfo">
+      <td colspan="1" class="centerContent">
+        <div class="form-label-group">
+          <p class="font-weight-bold">车辆价格： </p>
+        </div>
+      </td>
+      <td colspan="1">
+        <div class="form-label-group">
+          <p class="font-weight-bold">{{$lg.CarPrice}}</p>
+        </div>
+      </td>
+    </tr>
+    <tr id="userInfo">
+      <td colspan="1" class="centerContent">
+        <div class="form-label-group">
+          <p class="font-weight-bold">运输数量： </p>
+        </div>
+      </td>
+      <td colspan="1">
+        <div class="form-label-group">
+          <p class="font-weight-bold">{{$lg.CarNum}}</p>
+        </div>
+      </td>
+    </tr>
+    </tbody>
+
+    <thead class="bg-danger">
+    <tr>
+      <th colspan="2">寄车信息: </th>
+    </tr>
+    </thead>
+    <tbody class="table-danger" >
+    <tr id="userInfo">
+      <td colspan="1" class="centerContent">
+        <div class="form-label-group">
+          <p class="font-weight-bold">发车人姓名： </p>
+        </div>
+      </td>
+      <td colspan="1">
+        <div class="form-label-group">
+          <p class="font-weight-bold">{{$lg.SenderName}}</p>
+        </div>
+      </td>
+    </tr>
+    <tr id="userInfo">
+      <td colspan="1" class="centerContent">
+        <div class="form-label-group">
+          <p class="font-weight-bold">发车人手机： </p>
+        </div>
+      </td>
+      <td colspan="1">
+        <div class="form-label-group">
+          <p class="font-weight-bold">{{$lg.SenderPhone}}</p>
+        </div>
+      </td>
+    </tr>
+    <tr id="userInfo">
+      <td colspan="1" class="centerContent">
+        <div class="form-label-group">
+          <p class="font-weight-bold">上门取车地址： </p>
+        </div>
+      </td>
+      <td colspan="1">
+        <div class="form-label-group">
+          <p class="font-weight-bold">{{$lg.SenderAddress}}</p>
+        </div>
+      </td>
+    </tr>
+    </tbody>
+
+    <thead class="bg-primary">
+    <tr>
+      <th colspan="2">收车信息: </th>
+    </tr>
+    </thead>
+    <tbody class="table-primary" >
+    <tr>
+      <td colspan="1" class="centerContent">
+        <div class="form-label-group">
+          <p class="font-weight-bold">收车人姓名： </p>
+        </div>
+      </td>
+      <td colspan="1">
+        <div class="form-label-group">
+          <p class="font-weight-bold">{{$lg.ReceiverName}}</p>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="1" class="centerContent">
+        <div class="form-label-group">
+          <p class="font-weight-bold">收车人手机： </p>
+        </div>
+      </td>
+      <td colspan="1">
+        <div class="form-label-group">
+          <p class="font-weight-bold">{{$lg.ReceiverPhone}}</p>
+        </div>
+      </td>
+    </tr>
+
+    <tr>
+      <td colspan="1" class="centerContent">
+        <div class="form-label-group">
+          <p class="font-weight-bold">收车人地址： </p>
+        </div>
+      </td>
+      <td colspan="1">
+        <div class="form-label-group">
+          <p class="font-weight-bold">{{$lg.ReceiverAddress}}</p>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="1" class="centerContent">
+        <div class="form-label-group">
+          <p class="font-weight-bold">是否需要发票： </p>
+        </div>
+      </td>
+      <td colspan="1">
+        <div class="form-label-group">
+          <p class="font-weight-bold">
+          {{if eq $lg.IsInvoice 0}}不需要发票
+          {{else if eq $lg.IsInvoice 1}}需要个人发票
+          {{else}}需要公司发票
+          {{end}}
+          </p>
+        </div>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+{{end}}

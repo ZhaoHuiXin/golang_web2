@@ -1,0 +1,251 @@
+{{import "layout.html"}}
+{{define "custom_css"}}
+<style>
+.cellFormat{
+  text-align:center;
+  vertical-align:middle;
+}
+#form{z-index: 9999;position:absolute;display:none;background:#fff;
+  border-top:5px solid #999;border-bottom:7px solid #999;
+  border-left:5px solid #999;border-right:7px solid #999;
+  width: 400px;height: 200px;padding: 20px}
+.selected{
+ !important;background: hotpink;
+}
+</style>
+{{end}}
+
+{{template "layout" .}}
+{{define "body"}}
+<h1 class="page-header">车易销汽车市场价管理</h1>
+<h6 class="sub-header">
+  <select id="brandSelect" >
+    <option value="0" >选择品牌</option>
+  </select>
+  &nbsp
+  <select id="seriesSelect" >
+    <option value="0" >选择车系</option>
+  </select>
+  &nbsp
+  <select id="specSelect" >
+    <option value="0" >选择车型</option>
+  </select>
+  &nbsp
+  <button  type="button" id="queryBtn" class="btn btn-success"  >
+    查询
+  </button>
+  <br>
+</h6>
+
+  <div id="form" >
+    <table align="center">
+      <tr><td align="center">
+          <h5 align="center">市场价格</h5>
+        <input id="priceInput" type="text" spec="" >万元
+        <p>价格修改后，车易销端车型价格也会同步更改</p>
+      </td></tr>
+    </table>
+    <table align="center">
+      <tr><td>
+       <input type="button" value=" 提 交 " onclick="upload();"/>
+        <input type="button" value=" 关 闭 " onclick="hide();"/>
+      </td></tr>
+    </table>
+  </div>
+
+<div id="contentShow" class="table-responsive">
+  <table class="table" >
+    <thead>
+    <tr>
+      <th class="cellFormat" >品牌</th>
+      <th class="cellFormat">车系</th>
+      <th class="cellFormat">车型</th>
+      <th class="cellFormat">厂商指导价</th>
+      <th class="cellFormat">市场实时报价</th>
+      <th class="cellFormat">市场价更新时间</th>
+      <th class="cellFormat">操作</th>
+    </tr>
+    </thead>
+    <tbody class="rebody">
+    {{if eq .Data.model 1}}
+    {{range .Data.quotes}}
+    <tr data-id="{{.SpecId}}" >
+      <td class="cellFormat" data-name="brandName" data-title="品牌">{{.BrandName}}</td>
+      <td class="cellFormat" data-name="seriesName" data-title="车系">{{.SeriesName}}</td>
+      <td class="cellFormat" data-name="specName" data-title="车型">{{.SpecName}}</td>
+      <td class="cellFormat" data-name="guidePrice" data-title="厂商指导价">{{.GuidePrice}}</td>
+      <td class="cellFormat" data-name="realPrice" data-title="市场实时报价">{{.RealPrice}}</td>
+      <td class="cellFormat" data-name="updatedAt" data-title="市场价更新时间">{{.UpdatedAt}}</td>
+      <td class="cellFormat">
+        <button type="button" onclick="changePrice(this)" class="marketBtn btn btn-link btn-sm" >
+          市场价格
+        </button>
+      </td>
+    </tr>
+    {{end}}
+    </tbody>
+  </table>
+{{end}}
+
+{{if ne .Data.brandId "0"}}
+  <div class="am-cf">
+    共{{.Data.paginator.totals}}条记录 共记{{.Data.paginator.totalpages}} 页 当前页  {{.Data.paginator.currpage}}
+    <div class="am-fr">
+      <ul class="am-pagination">
+        <li style="float: left;list-style: none;width: 50px;text-align: center"><a href="/v1/ixiao/cars/quote?start={{.Data.paginator.firstpage}}&brandId={{.Data.brandId}}">首页</a></li>
+        <li style="float: left;list-style: none;width: 50px;text-align: center"><a href="/v1/ixiao/cars/quote?start={{.Data.paginator.prevpage}}&brandId={{.Data.brandId}}">上一页</a></li>
+      {{range $index,$page := .Data.paginator.pages}}
+        <li style="float: left;list-style: none;width: 50px;text-align: center"><a href="/v1/ixiao/cars/quote?start={{$page}}&brandId={{.}}">{{$page}}</a></li>
+      {{end}}
+        <li style="float: left;list-style: none;width: 50px;text-align: center"><a href="/v1/ixiao/cars/quote?start={{.Data.paginator.nextpage}}&brandId={{.Data.brandId}}">下一页</a></li>
+        <li style="float: left;list-style: none;width: 50px;text-align: center"><a href="/v1/ixiao/cars/quote?start={{.Data.paginator.lastpage}}&brandId={{.Data.brandId}}">尾页</a></li>
+      </ul>
+    </div>
+  </div>
+  {{else if ne .Data.seriesId "0"}}
+    <div class="am-cf">
+      共{{.Data.paginator.totals}}条记录 共记{{.Data.paginator.totalpages}} 页 当前页  {{.Data.paginator.currpage}}
+      <div class="am-fr">
+        <ul class="am-pagination">
+          <li style="float: left;list-style: none;width: 50px;text-align: center"><a href="/v1/ixiao/cars/quote?start={{.Data.paginator.firstpage}}&seriesId={{.Data.seriesId}}">首页</a></li>
+          <li style="float: left;list-style: none;width: 50px;text-align: center"><a href="/v1/ixiao/cars/quote?start={{.Data.paginator.prevpage}}&seriesId={{.Data.seriesId}}">上一页</a></li>
+        {{range $index,$page := .Data.paginator.pages}}
+          <li style="float: left;list-style: none;width: 50px;text-align: center"><a href="/v1/ixiao/cars/quote?start={{$page}}&seriesId={{.}}">{{$page}}</a></li>
+        {{end}}
+          <li style="float: left;list-style: none;width: 50px;text-align: center"><a href="/v1/ixiao/cars/quote?start={{.Data.paginator.nextpage}}&seriesId={{.Data.seriesId}}">下一页</a></li>
+          <li style="float: left;list-style: none;width: 50px;text-align: center"><a href="/v1/ixiao/cars/quote?start={{.Data.paginator.lastpage}}&seriesId={{.Data.seriesId}}">尾页</a></li>
+        </ul>
+      </div>
+    </div>
+  {{else if ne .Data.specId "0"}}
+    <div class="am-cf">
+    共{{.Data.paginator.totals}}条记录 共记{{.Data.paginator.totalpages}} 页 当前页  {{.Data.paginator.currpage}}
+      <div class="am-fr">
+        <ul class="am-pagination">
+          <li style="float: left;list-style: none;width: 50px;text-align: center"><a href="/v1/ixiao/cars/quote?start={{.Data.paginator.firstpage}}&specId={{.Data.specId}}">首页</a></li>
+          <li style="float: left;list-style: none;width: 50px;text-align: center"><a href="/v1/ixiao/cars/quote?start={{.Data.paginator.prevpage}}&specId={{.Data.specId}}">上一页</a></li>
+        {{range $index,$page := .Data.paginator.pages}}
+          <li style="float: left;list-style: none;width: 50px;text-align: center"><a href="/v1/ixiao/cars/quote?start={{$page}}&specId={{.}}">{{$page}}</a></li>
+        {{end}}
+          <li style="float: left;list-style: none;width: 50px;text-align: center"><a href="/v1/ixiao/cars/quote?start={{.Data.paginator.nextpage}}&specId={{.Data.specId}}">下一页</a></li>
+          <li style="float: left;list-style: none;width: 50px;text-align: center"><a href="/v1/ixiao/cars/quote?start={{.Data.paginator.lastpage}}&specId={{.Data.specId}}">尾页</a></li>
+        </ul>
+      </div>
+    </div>
+  {{end}}
+</div>
+
+<script>
+  $(function () {
+    $.get("/v1/ixiao/cars/brands",function (data) {
+      var brands = data.brands;
+      for(var i=0;i<brands.length;i++){
+        var k = brands[i].id;
+        var v = brands[i].name;
+        $("#brandSelect").append($("<option></option>").val(k).html(v));
+      }
+    });
+    $("#brandSelect").change(function(){
+      var $seriesSelect = $("#seriesSelect");
+      var $specSelect = $("#specSelect");
+      $seriesSelect.empty();
+      $seriesSelect.append($("<option></option>").val(0).html("选择车系"));
+      $specSelect.empty();
+      $specSelect.append($("<option></option>").val(0).html("选择车型"));
+      var brandId =  $("#brandSelect").val() ;
+      console.log(brandId);
+      $.get("/v1/ixiao/cars/series",{"brandId":brandId},function (data) {
+        console.log(data, typeof data);
+        if(data.series == null){
+          return
+        }
+        var series = data.series;
+        for(var i=0;i<series.length;i++){
+          var k =series[i].id;
+          var v = series[i].name;
+          $seriesSelect.append($("<option></option>").val(k).html(v));
+        }
+      })
+    });
+    $("#seriesSelect").change(function(){
+      var $specSelect = $("#specSelect");
+      $specSelect.empty();
+      $specSelect.append($("<option></option>").val(0).html("选择车型"));
+      var seriesId =  $("#seriesSelect").val() ;
+      console.log(seriesId);
+      $.get("/v1/ixiao/cars/specs",{"seriesId":seriesId},function (data) {
+        console.log(data, typeof data);
+        if(data.specs == null){
+          return
+        }
+        var specs = data.specs;
+        for(var i=0;i<specs.length;i++){
+          var k =specs[i].id;
+          var v = specs[i].name;
+          $specSelect.append($("<option></option>").val(k).html(v));
+        }
+      })
+    });
+    $("#queryBtn").click(function () {
+      var brandId = $("#brandSelect").val();
+      var seriesId = $("#seriesSelect").val();
+      var specId = $("#specSelect").val();
+      var queryUrl = "";
+      if(brandId==0 && seriesId==0 && specId==0){
+        return
+      }
+      if (specId != 0 ){
+        queryUrl = "/v1/ixiao/cars/quote?specId=" + specId.toString() ;
+      }else if(seriesId !=0 ){
+        queryUrl = "/v1/ixiao/cars/quote?seriesId=" + seriesId.toString() ;
+      }else if (brandId != 0) {
+        queryUrl = "/v1/ixiao/cars/quote?brandId=" + brandId.toString();
+      }
+      console.log(queryUrl);
+      $(location).attr('href', queryUrl);
+    })
+  });
+  function changePrice(obj) {
+
+    $("#form").css({
+      "position": "absolute",
+      "top": "30%",
+      "left": "80%"
+    });
+    $("#form").show();
+    var $this = $(obj).parents('tr');
+    $this.attr("class", "selected");
+    var pk = $this.data('id');
+    var $priceInput = $("#priceInput");
+    $priceInput.attr("spec", pk);
+    $(".marketBtn").removeAttr("onclick");
+  }
+  function hide(){
+    $("tr").removeAttr("class");
+    $("#priceInput").val("");
+    $("#form").hide();
+    $(".marketBtn").attr("onclick","changePrice(this)");
+  }
+  function upload() {
+    var $priceInput=$("#priceInput");
+    var specId=$priceInput.attr("spec");
+    console.log(specId);
+    var realPrice=$priceInput.val();
+    var priceStr = realPrice.toString() + "万元";
+    $.ajax({
+      url: "/v1/ixiao/cars/quote",
+      type: "PUT",
+      data: {"specId":specId,"realPrice":priceStr} ,
+      success: function(res) {
+        console.log(res, typeof res);
+        window.location.reload();
+      }
+    });
+    $priceInput.val("");
+    $("#form").hide();
+    $(".marketBtn").attr("onclick","changePrice(this)");
+  }
+</script>
+
+{{end}}
+

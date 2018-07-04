@@ -1,0 +1,18 @@
+[
+  {"Name": "员工列表", "Path": "/users", "Category": "人员类"},
+  {"Name": "部门管理", "Path":"/departments", "Category": "人员类"},
+  {"Name": "项目列表", "Path": "/projects", "Category": "人员类"},
+
+  {"Name": "", "Path": "/v1/ixiao/finance/stock", "Category": "车易销"},
+  {"Name": "", "Path": "/ixiao/salers", "Category": "车易销"},
+  {"Name": "注册审核", "Path": "/v1/ixiao/register/manager", "Category": "车易销"},
+  {"Name": "金融订单", "Path": "/v1/ixiao/finance/bill", "Category": "车易销"},
+  {"Name": "物流订单", "Path": "/v1/ixiao/logistics/bill", "Category": "车易销"},
+  {"Name": "数据统计", "Path": "/v1/ixiao/statistics/manager", "Category": "车易销"},
+  {"Name": "车型价格", "Path": "/v1/ixiao/cars/quote", "Category": "车易销"},
+
+
+  {"Name": "固定资产管理", "Path": "/assets", "Category": "资产类"},
+  {"Name": "电子资产管理", "Path": "/assets/e", "Category": "资产类"},
+  {"Name": "资产分类管理", "Path": "/assets/category", "Category": "资产类"}
+]

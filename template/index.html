@@ -1,0 +1,232 @@
+{{import "layout.html"}}
+{{template "layout" .}}
+{{define "body"}}
+
+<style type="text/css">
+  .equipment-name,
+  .equipment-liscence {
+     float: left;
+     width: 150px;
+      margin-left: 10px;
+  }
+
+  .name-label,
+  .liscence-label {
+     float: left;
+     height: 35px;
+     line-height: 35px;
+
+  }
+
+  .f-left {
+    float: left;
+    margin-left: 200px;
+  }
+
+  .padding-left {
+    padding-left: 20px;
+    margin-top: 30px;
+  }
+
+  .btn-left {
+    margin-left: 40px;
+  }
+</style>
+<h1 class="page-header">公司资产管理</h1>
+<div class="row padding-left">
+  <div class="dropdown f-left" style='margin-left: 0'>
+    <label for="exampleInputName1" style="margin-right: 6px;">设备类型</label>
+    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">请选择设备类型<span class="caret"></span></button>
+    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+      <li><a href="#">打印机</a></li>
+      <li><a href="#">mac电脑</a></li>
+      <li><a href="#">Windows电脑</a></li>
+      <li><a href="#">用章</a></li>
+      <li><a href="#">鼠标</a></li>
+      <li><a href="#">公章</a></li>
+      <li><a href="#">键盘</a></li>
+      <li><a href="#">桌椅</a></li>
+      <li role="separator" class="divider"></li>
+      <li><a href="#">VR眼镜</a></li>
+      <li><a href="#">触摸屏</a></li>
+      <li><a href="#">咖啡桌</a></li>
+      <li><a href="#">los手机</a></li>
+      <li><a href="#">Android手机</a></li>
+    </ul>
+  </div>
+  <div class="f-left">
+     <label for="exampleInputEmail2" class='name-label'>设备名称</label>
+     <input type="email" class="form-control equipment-name" id="exampleInputEmail2" placeholder="请输入设备名称">
+  </div>
+  <div class="dropdown f-left">
+   <label for="exampleInputName3" style="margin-right: 6px;">使用人</label>
+   <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">请选择使用人<span class="caret"></span></button>
+   <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
+    <li><a href="#">翟会会</a></li>
+    <li><a href="#">安娜</a></li>
+    <li><a href="#">冯武鹏</a></li>
+    <li><a href="#">黄玉</a></li>
+    <li><a href="#">董倩倩</a></li>
+    <li><a href="#">武警卫</a></li>
+    <li><a href="#">王会杰</a></li>
+    <li><a href="#">王烨</a></li>
+   </ul>
+  </div>
+  <div class="f-left">
+    <label for="exampleInputxlh" class='liscence-label'>序列号</label>
+    <input type="email" class="form-control equipment-liscence" id="exampleInputEmail2" placeholder="请输入序列号">
+  </div>
+</div>
+<div class='row padding-left' style='margin-top: 20px;'>
+ <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
+  添加设备
+</button>
+  <button type="submit" class="btn btn-default btn-left">查询</button>
+  <button type="submit" class="btn btn-default btn-left">重置</button>
+  <button type="submit" class="btn btn-default btn-left">导出</button>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">添加办公用品</h4>
+      </div>
+      <div class="modal-body">
+      <div>
+         <p>*设备类型</p>
+       <div class='dropdown'>
+        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu3" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">请选择设备类型<span class="caret"></span></button>
+         <ul class="dropdown-menu" aria-labelledby="dropdownMenu3">
+         <li><a href="#">打印机</a></li>
+         <li><a href="#">mac电脑</a></li>
+         <li><a href="#">Windows电脑</a></li>
+         <li><a href="#">用章</a></li>
+         <li><a href="#">鼠标</a></li>
+         <li><a href="#">公章</a></li>
+         <li><a href="#">键盘</a></li>
+         <li><a href="#">桌椅</a></li>
+         <li role="separator" class="divider"></li>
+         <li><a href="#">VR眼镜</a></li>
+         <li><a href="#">触摸屏</a></li>
+         <li><a href="#">咖啡桌</a></li>
+         <li><a href="#">ios手机</a></li>
+         <li><a href="#">Android手机</a></li>
+         </ul>
+       </div>
+      </div>
+      <div>
+         <p>*设备名称</p>
+         <input type="email" class="form-control" id="exampleInputEmail2"  placeholder="请输入设备名称">
+      </div>
+      <div>
+         <p>*设备型号</p>
+         <input type="email" class="form-control" id="exampleInputEmail2" placeholder="请输入设备型号">
+      </div>
+      <div>
+         <p>*资产ID</p>
+         <input type="email" class="form-control" id="exampleInputEmail2" placeholder="请为设备命名一个唯一性资产ID">
+      </div>
+      <div>
+        <p>*序列号</p>
+        <input type="email" class="form-control" id="exampleInputEmail2" placeholder="请输入能够标识该设备唯一性的序列号">
+      </div>
+      <div>
+        <p>*使用人</p>
+      <div class='dropdown'>
+        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu4" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">请选择使用人<span class="caret"></span></button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenu4">
+        <li><a href="#">翟会会</a></li>
+        <li><a href="#">安娜</a></li>
+        <li><a href="#">冯武鹏</a></li>
+        <li><a href="#">黄玉</a></li>
+        <li><a href="#">董倩倩</a></li>
+        <li><a href="#">武警卫</a></li>
+        <li><a href="#">王会杰</a></li>
+        <li><a href="#">王烨</a></li>
+      </ul>
+      </div>
+      </div>
+      <div>
+        <p>设备价格</p>
+         <input type="email" class="form-control" id="exampleInputEmail2" placeholder="请输入价格     元">
+      </div>
+      <div>
+        <p>购买时间</p>
+        <div class='dropdown'>
+        <button class="btn btn-default dropdown-toggle" type="text/javascript" id="test" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">请选择购买日期<span class="caret"></span></button>
+        <ul class="dropdown-menu" aria-labelledby="test">
+        <script type="text/javascript">
+        $("#test").jeDate({
+        format:"YYYY-MM-DD",
+        isTime:false,
+        minDate:"2014-09-19 00:00:00"
+        </script>
+        </div>
+        <div>
+          <p>添加备注</p>
+          <input type="content"class="form-control" id="exampleInputContent" placeholder="     ">
+        </div>
+      </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+        <button type="button" class="btn btn-primary">确定</button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenu5">
+      </div>
+    </div>
+  </div>
+</div>
+<h2 class="sub-header"></h2>
+<div class="table-responsive">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>资产ID</th>
+        <th>设备名称</th>
+        <th>设备类型</th>
+        <th>序列号</th>
+        <th>设备型号</th>
+        <th>设备价格(元)</th>
+        <th>购买时间</th>
+        <th>添加时间</th>
+        <th>使用人</th>
+        <th>备注</th>
+        <th>操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>235</td>
+        <td>苹果一体机</td>
+        <td>mac电脑</td>
+        <td>1223</td>
+        <td>cskj—01</td>
+        <td>26800</td>
+        <td>2017.01.02</td>
+        <td>2017.12.12</td>
+        <td>翟会会</td>
+        <td>无</td>
+        <td>编辑</td>
+      </tr>
+      
+      <!-- <tr>
+       <td>5665</td>
+        <td>方形办公桌</td>
+        <td>桌椅</td>
+        <td>562</td>
+        <td>cskj—07</td>
+        <td>268</td>
+        <td>2017.01.02</td>
+        <td>2017.12.12</td>
+        <td>安娜</td>
+        <td>无</td>
+        <td>编辑</td>
+      </tr> -->
+    </tbody>
+  </table>
+</div>
+<script type="text/javascript">
+</script>
+{{end}}

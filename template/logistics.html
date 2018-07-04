@@ -1,0 +1,74 @@
+{{import "layout.html"}}
+{{template "layout" .}}
+{{define "body"}}
+
+<h1 class="page-header">车易销物流管理</h1>
+<h6 class="sub-header">
+  注：物流订单统计【经销店端】所有经销商下的物流发车订单信息。请平台工作人员尽快联系下单的经销商
+</h6>
+<div class="table-responsive">
+  <table class="table table-striped table-hover">
+    <thead>
+    <tr>
+      <th>下单经销商账号</th>
+      <th>下单时间</th>
+      <th>发车城市</th>
+      <th>收车城市</th>
+      <th>起运时间</th>
+      <th>车辆类型</th>
+      <th>车辆价格</th>
+      <th>运输数量</th>
+      <th>操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{range .Data.lgs}}
+    <tr data-id="{{.Id}}">
+      <td data-name="dealerName" data-title="下单经销商">{{.DealerName}}</td>
+      <td data-name="createdAt" data-title="下单时间">{{.CreatedAt}}</td>
+      <td data-name="brands" data-title="发车城市">{{.CityIdBegin}}</td>
+      <td data-name="UpdatedAt" data-title="收车城市">{{.CityIdEnd}}</td>
+      <td data-name="UpdatedAt" data-title="起运时间">{{.SendTime}}</td>
+      <td data-name="UpdatedAt" data-title="车辆类型">
+        {{if eq .CarType 0}}大型suv
+        {{else if eq .CarType 1}}标准suv
+        {{else}}标准轿车
+        {{end}}
+      </td>
+      <td data-name="UpdatedAt" data-title="车辆价格">{{.CarPrice}}</td>
+      <td data-name="UpdatedAt" data-title="运输数量">{{.CarNum}}</td>
+      <td>
+        <button type="button"  class="btn btn-link btn-sm">
+          <a href="/v1/ixiao/logistics/bill/detail?id={{.Id}}&start={{$.Data.start}}" >
+            查看详情
+          </a>
+        </button>
+      </td>
+
+    </tr>
+
+    {{else}}
+    <tr>
+      <td>空空如野</td>
+    </tr>
+    {{end}}
+
+    </tbody>
+  </table>
+  <div class="am-cf">
+    共{{.Data.paginator.totals}}条记录 共记{{.Data.paginator.totalpages}} 页 当前页  {{.Data.paginator.currpage}}
+    <div class="am-fr">
+      <ul class="am-pagination">
+        <li style="float: left;list-style: none;width: 50px;text-align: center"><a href="/v1/ixiao/logistics/bill?start={{.Data.paginator.firstpage}}&cert={{.Data.cert}}">首页</a></li>
+        <li style="float: left;list-style: none;width: 50px;text-align: center"><a href="/v1/ixiao/logistics/bill?start={{.Data.paginator.prevpage}}&cert={{.Data.cert}}">上一页</a></li>
+      {{range $index,$page := .Data.paginator.pages}}
+        <li style="float: left;list-style: none;width: 50px;text-align: center"  {{if eq $.Data.paginator.currpage $page }}class="am-active"{{end}}><a href="/v1/ixiao/logistics/bill?start={{$page}}&cert={{$.Data.cert}}">{{$page}}</a></li>
+      {{end}}
+        <li style="float: left;list-style: none;width: 50px;text-align: center"><a href="/v1/ixiao/logistics/bill?start={{.Data.paginator.nextpage}}&cert={{.Data.cert}}">下一页</a></li>
+        <li style="float: left;list-style: none;width: 50px;text-align: center"><a href="/v1/ixiao/logistics/bill?start={{.Data.paginator.lastpage}}&cert={{.Data.cert}}">尾页</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+{{end}}

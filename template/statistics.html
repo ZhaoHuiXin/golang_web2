@@ -1,0 +1,218 @@
+{{import "layout.html"}}
+{{template "layout" .}}
+
+{{define "body"}}
+<div class="my_duxs_time">
+  统计模式：<select id="model_select" >
+  <option value="register" >全国新增注册量</option>
+  <option value="registerAddUp" >全国累计新增注册量</option>
+  <option value="active" >全国活跃用户量</option>
+  <option value="activeAddUp" >全国累计活跃用户量</option>
+  <option value="deal" >全国成交量</option>
+  <option value="dealAddUp" >全国累计成交量</option>
+  <option value="dealSaler">全国成交商户数量</option>
+  <option value="dealSalerAddUp" >全国累计成交商户数量</option>
+</select>
+  <br>
+  <div>
+    开始日期: <select  id="beginYear">
+      <option value="year">年</option>
+    </select>
+    &nbsp
+    <select  id="beginMonth">
+      <option value="month">月</option>
+    </select>
+    &nbsp
+    <select class="dateGet"  id="beginDay">
+      <option value="day">日</option>
+    </select>
+    <!--<span id="result"></span>-->
+    &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+    结束日期: <select id="endYear">
+      <option value="year">年</option>
+    </select>
+    &nbsp
+    <select  id="endMonth">
+      <option value="month">月</option>
+    </select>
+    &nbsp
+    <select class="dateGet"  id="endDay">
+      <option value="day">日</option>
+    </select>
+    <!--<span id="result"></span>-->
+  </div>
+
+</div>
+<div id="container" style="height: 900px;width: 1500px"></div>
+
+{{end}}
+{{define "custom_script"}}
+<script src="/static/js/dateSelecter.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/4.1.0/echarts.min.js"></script>
+
+<script>
+  $(document).ready(function() {
+    // creatDate();
+    res = catch_data({{.Data.data}});
+
+    var dom = document.getElementById("container");
+    var myChart3 = echarts.init(dom);
+    var app = {};
+    var option3 = {
+      xAxis: {
+        type: 'category',
+        data: res.date,
+        axisLabel : {
+          interval:0,
+          rotate:-30
+        },
+      },
+      yAxis: {
+        type: 'value'
+      },
+      series: [{
+        data: res.num,
+        type: 'bar',
+        itemStyle: {
+          normal: {
+            label: {
+              show: true,
+              position: 'top',
+              textStyle: {
+                color: '#615a5a'
+              },
+              formatter:function(params){
+                if(params.value==0){
+                  return '';
+                }else
+                {
+                  return params.value;
+                }
+              }
+            }
+          }
+        }
+      }]
+    };
+    ;
+    // if (option3 && typeof option3 === "object") {
+    //   myChart3.setOption(option3, true);
+    // };
+
+
+
+    // 使用刚指定的配置项和数据显示图表。
+    myChart3.setOption(option3);
+    $('#model_select').on('change',function () {
+      var willSend = {};
+      var beginDate = getBeginDate();
+      var endDate = getEndDate();
+      var model = $(this).val();
+      var backDate = [];
+      var backCount = [];
+      willSend["model"] = model;
+      if (beginDate != 0 && endDate != 0 ){
+        // console.log(beginDate,typeof beginDate);
+        // console.log(endDate,typeof endDate);
+        if (beginDate < endDate){
+          willSend["begin"] = beginDate;
+          willSend["end"] = endDate;
+        }
+
+      };
+
+      $.when(getAjaxData(willSend).done(function (data) {
+        ajxRes = catch_data(data.data);
+        backDate = ajxRes.date;
+        backCount = ajxRes.num;
+        option3.xAxis.data = backDate;
+        option3.series[0].data =backCount;
+        myChart3.clear();
+        myChart3.setOption(option3,true);
+      }));
+    });
+
+    $('.dateGet').each(function () {
+      $(this).on('change',function () {
+        var willSend = {};
+        var beginDate = getBeginDate();
+        var endDate = getEndDate();
+        var model = $('#model_select').val();
+        var backDate = [];
+        var backCount = [];
+        willSend["model"] = model;
+        if (beginDate != 0 && endDate != 0 ){
+          // console.log(beginDate,typeof beginDate);
+          // console.log(endDate,typeof endDate);
+          if (beginDate < endDate){
+            willSend["begin"] = beginDate;
+            willSend["end"] = endDate;
+          }
+          $.when(getAjaxData(willSend).done(function (data) {
+            ajxRes = catch_data(data.data);
+            backDate = ajxRes.date;
+            backCount = ajxRes.num;
+            option3.xAxis.data = backDate;
+            option3.series[0].data =backCount;
+            myChart3.clear();
+            myChart3.setOption(option3,true);
+          }));
+        };
+      });
+    })
+
+  });
+  function catch_data(goData) {
+    var resData = goData;
+    var dateArray = new Array();
+    var countArray = new Array();
+    for (i in resData){
+      dateArray.push(resData[i].tm);
+      countArray.push(resData[i].count);
+    }
+    return {"date":dateArray, "num": countArray}
+  }
+
+  function getAjaxData(sendData) {
+    var defer = $.Deferred();
+    $.ajax({
+      url: '/v1/ixiao/statistics/manager',
+      type: 'GET',
+      data: sendData,
+      async: true,
+      success: function (data) {
+        defer.resolve(data);
+      }
+    });
+    return defer;
+  }
+  function getBeginDate() {
+    var Year = $("#beginYear").select().val();
+    var Month = $("#beginMonth").select().val();
+    var Day = $("#beginDay").select().val();
+    if (Year == "year" || Month == "month" || Day=="day"){
+      return 0
+    }
+    var formatMonth = conver(Month);
+    var formatDay = conver(Day);
+    var beginDate = Year + "-" + formatMonth + "-" + formatDay;
+    return beginDate
+  }
+  function getEndDate() {
+    var Year = $("#endYear").select().val();
+    var Month = $("#endMonth").select().val();
+    var Day = $("#endDay").select().val();
+    if (Year == "year" || Month == "month" || Day=="day"){
+      return 0
+    }
+    var formatMonth = conver(Month);
+    var formatDay = conver(Day);
+    var endDate = Year + "-" + formatMonth + "-" + formatDay;
+    return endDate
+  }
+  function conver(s) {
+    return s < 10 ? '0' + s : s;
+  }
+
+</script>
+{{end}}

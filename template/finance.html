@@ -1,0 +1,322 @@
+{{import "layout.html"}}
+{{template "layout" .}}
+{{define "body"}}
+<script>
+  function show_bill_loans() {
+    $(window).attr('location','/v1/ixiao/finance/bill');
+  }
+  function show_stock_loans() {
+    $(window).attr('location','/v1/ixiao/finance/stock');
+  }
+</script>
+
+<h1 class="page-header">车易销金融管理</h1>
+<h2 class="sub-header">
+  <button type="button" id="bbill" style="background: #343a40" onclick="show_bill_loans()" class="btn btn-secondary btn-sm">
+    订单贷
+  </button>
+
+  <button type="button" id="bstock" style="background: #343a40" onclick="show_stock_loans()" class="btn btn-secondary btn-sm">
+    库融贷
+  </button>
+
+</h2>
+<div class="table-responsive">
+  <table class="table table-striped table-hover" >
+    <thead>
+    <tr>
+      <th>下单经销商账号</th>
+      <th>下单时间</th>
+      <th>供应商信息</th>
+    {{if eq .Data.type "bill"}}
+      <th>合同总金额</th>
+      <th>已支付金额</th>
+    {{else if eq .Data.type "stock"}}
+      <th>总金额</th>
+    {{end}}
+      <th>垫资金额</th>
+      <th>贷款配比</th>
+      <th>实际打款保证金</th>
+    {{if eq .Data.type "bill"}}
+      <th>采购合同</th>
+      <th>已支付凭证</th>
+      <th>手续函照片</th>
+    {{else if eq .Data.type "stock"}}
+      <th>车辆合格证</th>
+      <th>车辆发票</th>
+    {{end}}
+      <th>操作</th>
+    </tr>
+    </thead>
+    <tbody >
+    {{range .Data.bills}}
+    <tr data-id="{{.Id}}">
+      <td style="text-align:center;vertical-align:middle;" data-name="dealerName" data-title="下单经销商账号">{{.DealerName}}</td>
+      <td style="text-align:center;vertical-align:middle;" data-name="createdAt" data-title="下单时间">{{.CreatedAt}}</td>
+      <td style="text-align:center;vertical-align:middle;" data-name="info" data-title="供应商信息">{{.Info}}</td>
+    {{if eq $.Data.type "bill"}}
+      <td style="text-align:center;vertical-align:middle;" data-name="contractFee" data-title="合同总金额">{{.ContractFee}}</td>
+      <td style="text-align:center;vertical-align:middle;" data-name="payed" data-title="已支付金额">{{.Payed}}</td>
+    {{else if eq $.Data.type "stock"}}
+      <td style="text-align:center;vertical-align:middle;" data-name="totalFee" data-title="总金额">{{.TotalFee}}</td>
+    {{end}}
+      <td style="text-align:center;vertical-align:middle;" data-name="payIn" data-title="垫资金额">{{.PayIn}}</td>
+      <td style="text-align:center;vertical-align:middle;" data-name="ratio" data-title="贷款配比">{{.Ratio}}</td>
+      <td style="text-align:center;vertical-align:middle;" data-name="deposit" data-title="实际打款保证金">{{.Deposit}}</td>
+
+    {{if eq $.Data.type "bill"}}
+      <td data-name="picPurchase" data-title="采购合同" >
+        <div class="form-label-group ">
+          <img data-src="holder.js/50x50"
+               class="rounded" alt="50x50"
+          src="{{.PicPurchase}}"
+               data-holder-rendered="true"
+               style="width: 50px; height: 50px;">
+        </div>
+      </td>
+      <td data-name="picPayed" data-title="已支付凭证">
+        <div class="form-label-group ">
+          <img data-src="holder.js/50x50"
+               class="rounded" alt="50x50"
+          src="{{.PicPayed}}"
+               data-holder-rendered="true"
+               style="width: 50px; height: 50px;">
+        </div>
+      </td>
+      <td data-name="picProcedure" data-title="手续函照片">
+        <div class="form-label-group ">
+          <img data-src="holder.js/50x50"
+               class="rounded" alt="50x50"
+          src="{{.PicProcedure}}"
+               data-holder-rendered="true"
+               style="width: 50px; height: 50px;">
+        </div>
+      </td>
+
+    {{else if eq $.Data.type "stock"}}
+      <td data-name="picPayed" data-title="车辆合格证">
+        <div class="form-label-group ">
+          <img data-src="holder.js/50x50"
+               class="rounded" alt="50x50"
+          src="{{.PicCert}}"
+               data-holder-rendered="true"
+               style="width: 50px; height: 50px;">
+        </div>
+      </td>
+      <td data-name="picProcedure" data-title="车辆发票">
+        <div class="form-label-group ">
+          <img data-src="holder.js/50x50"
+               class="rounded" alt="50x50"
+          src="{{.PicInvoice}}"
+               data-holder-rendered="true"
+               style="width: 50px; height: 50px;">
+        </div>
+      </td>
+    {{end}}
+
+      <td style="text-align:center;vertical-align:middle;">
+        <button type="button" onclick="show_win(this)" class="btn btn-link btn-sm" >
+          查看车辆信息
+        </button>
+      </td>
+    </tr>
+
+    <tr class="add_reason" style="display: none"  data-id="{{.Id}}">
+      <td colspan="12">
+        <div style="overflow:scroll; height:300px; width:400px; border: solid 1px #aaa; margin: 0 auto;">
+        {{if eq $.Data.type "bill"}}
+          <table class="table table-striped table-hover">
+            <thead>
+            <tr>
+              <th style="text-align:center;vertical-align:middle;" colspan="2" data-name="carName" data-title="车型名">
+              {{if eq .CarType 1}}
+                【中规/国产】
+              {{else if eq .CarType 2}}
+                【美规】
+              {{else if eq .CarType 3}}
+                【加规】
+              {{else if eq .CarType 4}}
+                【中东】
+              {{else if eq .CarType 5}}
+                【欧规】
+              {{else if eq .CarType 6}}
+                【墨版】
+              {{end}}
+              {{.CarName}}
+              </th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+              <td colspan="1" class="centerContent" >
+                <div class="form-label-group">
+                  <p class="font-weight-bold">指导价： </p>
+                </div>
+              </td>
+              <td style="text-align:center;vertical-align:middle;" data-name="carPrice" data-title="指导价">{{.CarGuide}}</td>
+            </tr>
+
+            <tr>
+              <td colspan="1" class="centerContent" >
+                <div class="form-label-group">
+                  <p class="font-weight-bold">外观/内饰颜色： </p>
+                </div>
+              </td>
+              <td style="text-align:center;vertical-align:middle;" data-name="carColor" data-title="外观/内饰颜色">{{.CarColor}}</td>
+            </tr>
+
+            <tr>
+              <td colspan="1" class="centerContent" >
+                <div class="form-label-group">
+                  <p class="font-weight-bold">数量： </p>
+                </div>
+              </td>
+              <td style="text-align:center;vertical-align:middle;" data-name="carNum" data-title="数量">{{.CarNum}}</td>
+            </tr>
+
+            <tr>
+              <td colspan="1" class="centerContent" >
+                <div class="form-label-group">
+                  <p class="font-weight-bold">单辆车合同价： </p>
+                </div>
+              </td>
+              <td style="text-align:center;vertical-align:middle;" data-name="carPrice" data-title="单辆车合同价">{{.CarPrice}}</td>
+            </tr>
+
+            </tbody>
+          </table>
+        {{else if eq $.Data.type "stock"}}
+        {{range .Cars}}
+          <table class="table table-striped table-hover">
+            <thead>
+            <tr>
+              <th style="text-align:center;vertical-align:middle;" colspan="2" data-name="carName" data-title="车型名">
+              {{if eq .car_type 1}}
+                【中规/国产】
+              {{else if eq .car_type 2}}
+                【美规】
+              {{else if eq .car_type 3}}
+                【加规】
+              {{else if eq .car_type 4}}
+                【中东】
+              {{else if eq .car_type 5}}
+                【欧规】
+              {{else if eq .car_type 6}}
+                【墨版】
+              {{end}}
+              {{.i1}}
+              </th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+              <td colspan="1" class="centerContent" >
+                <div class="form-label-group">
+                  <p class="font-weight-bold">指导价： </p>
+                </div>
+              </td>
+              <td style="text-align:center;vertical-align:middle;" data-name="carPrice" data-title="指导价">{{.i2}}</td>
+            </tr>
+            <tr>
+              <td colspan="1" class="centerContent" >
+                <div class="form-label-group">
+                  <p class="font-weight-bold">外观/内饰颜色： </p>
+                </div>
+              </td>
+              <td style="text-align:center;vertical-align:middle;" data-name="carColor" data-title="外观/内饰颜色">{{.car_color}}</td>
+            </tr>
+            <tr>
+              <td colspan="1" class="centerContent" >
+                <div class="form-label-group">
+                  <p class="font-weight-bold">数量： </p>
+                </div>
+              </td>
+              <td style="text-align:center;vertical-align:middle;" data-name="carNum" data-title="数量">{{.car_num}}</td>
+            </tr>
+            <tr>
+              <td colspan="1" class="centerContent" >
+                <div class="form-label-group">
+                  <p class="font-weight-bold">单辆车合同价： </p>
+                </div>
+              </td>
+              <td style="text-align:center;vertical-align:middle;" data-name="carPrice" data-title="单辆车合同价">{{.car_price}}</td>
+            </tr>
+            </tbody>
+          </table>
+        {{end}}
+        {{end}}
+        </div>
+        <button  id="closeWin" onclick="close_win(this)" class="btn btn-primary">关闭</button>
+      </td>
+
+    </tr>
+    {{else}}
+    <tr>
+      <td>空空如野</td>
+    </tr>
+    {{end}}
+    </tbody>
+  </table>
+
+  {{if eq .Data.type "bill"}}
+  <div class="am-cf">
+    共{{.Data.paginator.totals}}条记录 共记{{.Data.paginator.totalpages}} 页 当前页  {{.Data.paginator.currpage}}
+    <div class="am-fr">
+      <ul class="am-pagination">
+        <li style="float: left;list-style: none;width: 50px;text-align: center"><a href="/v1/ixiao/finance/bill?start={{.Data.paginator.firstpage}}&cert={{.Data.cert}}">首页</a></li>
+        <li style="float: left;list-style: none;width: 50px;text-align: center"><a href="/v1/ixiao/finance/bill?start={{.Data.paginator.prevpage}}&cert={{.Data.cert}}">上一页</a></li>
+      {{range $index,$page := .Data.paginator.pages}}
+        <li style="float: left;list-style: none;width: 50px;text-align: center" {{if eq $.Data.paginator.currpage $page }}class="am-active"{{end}}><a href="/v1/ixiao/finance/bill?start={{$page}}&cert={{$.Data.cert}}">{{$page}}</a></li>
+      {{end}}
+        <li style="float: left;list-style: none;width: 50px;text-align: center"><a href="/v1/ixiao/finance/bill?start={{.Data.paginator.nextpage}}&cert={{.Data.cert}}">下一页</a></li>
+        <li style="float: left;list-style: none;width: 50px;text-align: center"><a href="/v1/ixiao/finance/bill?start={{.Data.paginator.lastpage}}&cert={{.Data.cert}}">尾页</a></li>
+      </ul>
+    </div>
+  </div>
+  {{else if eq .Data.type "stock"}}
+    <div class="am-cf">
+      共{{.Data.paginator.totals}}条记录 共记{{.Data.paginator.totalpages}} 页 当前页  {{.Data.paginator.currpage}}
+      <div class="am-fr">
+        <ul class="am-pagination">
+          <li style="float: left;list-style: none;width: 50px;text-align: center"><a href="/v1/ixiao/finance/stock?start={{.Data.paginator.firstpage}}&cert={{.Data.cert}}">首页</a></li>
+          <li style="float: left;list-style: none;width: 50px;text-align: center"><a href="/v1/ixiao/finance/stock?start={{.Data.paginator.prevpage}}&cert={{.Data.cert}}">上一页</a></li>
+        {{range $index,$page := .Data.paginator.pages}}
+          <li style="float: left;list-style: none;width: 50px;text-align: center" {{if eq $.Data.paginator.currpage $page }}class="am-active"{{end}}><a href="/v1/ixiao/finance/stock?start={{$page}}&cert={{$.Data.cert}}">{{$page}}</a></li>
+        {{end}}
+          <li style="float: left;list-style: none;width: 50px;text-align: center"><a href="/v1/ixiao/finance/stock?start={{.Data.paginator.nextpage}}&cert={{.Data.cert}}">下一页</a></li>
+          <li style="float: left;list-style: none;width: 50px;text-align: center"><a href="/v1/ixiao/finance/stock?start={{.Data.paginator.lastpage}}&cert={{.Data.cert}}">尾页</a></li>
+        </ul>
+      </div>
+    </div>
+  {{end}}
+</div>
+
+<script>
+  $(function () {
+    if (({{.Data.type}})=="bill") {
+      $("#bbill").css("background","olivedrab");
+    }else if(({{.Data.type}})=="stock") {
+      $("#bstock").css("background","olivedrab");
+    }
+  });
+
+  function show_win(obj) {
+    var $this = $(obj).parents('tr').next('tr');
+    if($this.css("display")=="none"){
+      $this.show();
+    }else{
+      $this.hide();
+    }
+  }
+
+  function close_win(obj) {
+    $(".refuseReason").val("请说明驳回原因，不超过100字");
+    console.log("hello");
+    var $this = $(obj).parents('tr');
+    console.log($this);
+    $this.hide();
+  }
+
+</script>
+
+{{end}}

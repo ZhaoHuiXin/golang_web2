@@ -1,0 +1,8 @@
+#!/bin/bash
+IXIAO_PROJECT=/home/cheyixiao
+IXIAO_DOMAIN=https://cheyixiao.autoforce.net/
+while [[ 1 ]]
+do
+  ./admin -mysql 'afsaas:218F2AE2-F275-430B-A20B-1FD9E0CAD419@tcp(127.0.0.1:3306)/cheshi' -listen ':9999'
+  sleep 1
+done

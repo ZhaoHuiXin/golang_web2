@@ -1,0 +1,91 @@
+{{import "layout.html"}}
+{{template "layout" .}}
+{{define "body"}}
+
+<h1 class="page-header">部门管理</h1>
+<h2 class="sub-header">
+  <button type="button" onclick="show_add()" class="btn btn-secondary btn-sm">
+    添加部门
+  </button>
+</h2>
+<div class="table-responsive">
+  <table class="table table-striped table-hover">
+    <thead>
+      <tr>
+        <th>编号</th>
+        <th>部门名称</th>
+        <th>上级部门</th>
+        <th>操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr id="add_tr" hidden>
+        <form method="POST" action="department">
+
+        <td colspan="2">
+
+        <div class="form-label-group">
+          <input name="name" id="inputName" type="text" class="form-control" required placeholder="部门名称">
+          <label for="inputName">部门名称</label>
+        </div>
+
+        </td>
+
+        <td>
+
+        <div class="form-label-group">
+          <select class="custom-select" name="superior" id="inputSuperior">
+            <option selected value="0">顶级部门</option>
+            {{range .Data.departments}}
+            <option value="{{.id}}">{{.name}}</option>
+            {{end}}
+          </select>
+        </div>
+
+        </td>
+
+        <td>
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </td>
+        </form>
+      </tr>
+      {{range .Data.departments}}
+      <tr data-id="{{.id}}">
+        <td>{{.id}}</td>
+        <td><a href="/department/{{.id}}/roles" class="edit_field" data-name="name" data-title="部门名称">{{.name}}</a></td>
+        <td>{{.supname}}</td>
+        <td>
+          <button type="button" onclick="show_editor(this)" class="btn btn-link btn-sm">
+            修改
+          </button>
+        </td>
+      </tr>
+      {{else}}
+      <tr>
+        <td>空空如野</td>
+      </tr>
+      {{end}}
+
+    </tbody>
+  </table>
+</div>
+  <script>
+    function show_add() {
+      $('#add_tr').removeAttr('hidden');
+    }
+
+    function show_editor(obj) {
+      var $this = $(obj).parents('tr');
+      var pk = $this.data('id');
+      $this.find('.edit_field').each(function() {
+        $(this).editable({
+          url: '/department',
+          type: 'text',
+          pk: pk,
+          name: $(this).data('name'),
+          title: $(this).data('title')
+        });
+      });
+    }
+  </script>
+{{end}}

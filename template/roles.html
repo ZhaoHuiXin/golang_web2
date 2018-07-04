@@ -1,0 +1,95 @@
+{{import "layout.html"}}
+{{template "layout" .}}
+{{define "body"}}
+
+<h1 class="page-header">{{.Data.depname}} 部门 角色管理</h1>
+<h2 class="sub-header">
+  <button type="button" onclick="show_add()" class="btn btn-secondary btn-sm">
+    添加角色
+  </button>
+</h2>
+<div class="table-responsive">
+  <table class="table table-striped table-hover">
+    <thead>
+      <tr>
+        <th>编号</th>
+        <th>角色</th>
+        <th>权限</th>
+        <th>操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr id="add_tr" hidden>
+        <form method="POST" action="role">
+
+        <td colspan="3">
+          <div class="form-label-group">
+            <input name="name" id="inputName" type="text" class="form-control" required placeholder="角色">
+            <label for="inputName">角色</label>
+          </div>
+        </td>
+
+        <td>
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </td>
+        </form>
+      </tr>
+      {{range .Data.roles}}
+      <tr data-id="{{.Id}}">
+        <td>{{.Id}}</td>
+        <td><a href="#" class="edit_field" data-name="name" data-title="角色">{{.Name}}</a></td>
+        <td><a class="edit_field" id="feats">选择</a></td>
+        <td>
+          <button type="button" onclick="show_editor(this)" class="btn btn-link btn-sm">
+            修改
+          </button>
+        </td>
+      </tr>
+      {{else}}
+      <tr>
+        <td>空空如野</td>
+      </tr>
+      {{end}}
+
+    </tbody>
+  </table>
+</div>
+  <script>
+    function show_add() {
+      $('#add_tr').removeAttr('hidden');
+    }
+
+    function show_editor(obj) {
+      var $this = $(obj).parents('tr');
+      var pk = $this.data('id');
+      $this.find('.edit_field').each(function() {
+        var self = $(this);
+        if (self.attr('id') == 'feats') {
+          var point = '/role/' + pk + '/access';
+          $.getJSON(point, function(data) {
+            self.editable({
+              title: '选择权限',
+              type: 'checklist',
+              url: point,
+              value: data.feats,
+              pk: pk,
+              display: function(value, sourceData) {},
+              source: [
+                {{range .Data.features}}
+                {value: {{.Id}}, text: '{{.Methods}} {{.Path}}'},
+                {{end}}
+              ],
+            });
+          });
+          return
+        }
+
+        self.editable({
+          url: '/department/{{.Data.depid}}/role',
+          pk: pk,
+        });
+
+      });
+    }
+  </script>
+{{end}}

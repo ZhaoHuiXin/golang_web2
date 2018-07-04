@@ -1,0 +1,213 @@
+{{import "layout.html"}}
+{{template "layout" .}}
+{{define "body"}}
+
+<h1 class="page-header">员工列表</h1>
+<h2 class="sub-header">
+  <button type="button" onclick="show_add_user()" class="btn btn-secondary btn-sm">
+    添加员工
+  </button>
+</h2>
+<div class="table-responsive">
+  <table class="table table-striped table-hover">
+    <thead>
+      <tr>
+        <th>工号</th>
+        <th>姓名</th>
+        <th>部门</th>
+        <th>角色</th>
+        <th>操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr id="add_tr" hidden>
+        <form method="POST" action="user">
+        <td>
+        <div class="form-label-group">
+          <input name="serial" id="inputSerial" type="text" class="form-control" required placeholder="工号">
+          <label for="inputSerial">工号</label>
+        </div>
+        <div class="form-label-group">
+          <input name="email" id="inputEmail" type="text" class="form-control" required placeholder="邮箱">
+          <label for="inputEmail">邮箱</label>
+        </div>
+        </td>
+        <td colspan="2">
+        <div class="form-label-group">
+          <input name="name" id="inputName" type="text" class="form-control" required placeholder="姓名">
+          <label for="inputName">姓名</label>
+        </div>
+        <div class="form-group">
+          <select class="form-control" name="dep_id" id="inputDepId" required>
+            <option>部门</option>
+          </select>
+        </div>
+        </td>
+        <td>
+        <div class="form-group">
+          <select class="form-control" name="role_id" id="inputRoleId" required>
+            <option>角色</option>
+          </select>
+        </div>
+        </td>
+        <td>
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </td>
+        </form>
+      </tr>
+      {{range .Data.users}}
+      <tr data-id="{{.Id}}">
+        <td><a href="#" class="edit_field" data-name="serial" data-title="工号">{{.Serial}}</a></td>
+        <td><a href="#" class="edit_field" data-name="name" data-title="姓名">{{.Name}}</a></td>
+        <td><a href="#" class="edit_field" data-type="select" data-name="dep_id" data-value="{{.DepId}}" data-title="部门">{{.Dep}}</a></td>
+        <td><a href="#" class="edit_field" data-type="select" data-name="role_id" data-value="{{.RoleId}}" data-title="角色">{{.Role}}</a></td>
+        <td>
+          <button type="button" onclick="show_editor(this)" class="btn btn-link btn-sm">
+            修改
+          </button>
+          {{if .Wbind}}
+          <button type="button" data-src="{{.QRCode}}" data-toggle="modal" data-target="#qrbindModal" class="btn btn-link btn-sm">
+            微信绑定
+          </button>
+          {{end}}
+        </td>
+      </tr>
+      {{else}}
+      <tr>
+        <td>空空如野</td>
+      </tr>
+      {{end}}
+    </tbody>
+  </table>
+</div>
+
+<div class="modal fade" id="qrbindModal" tabindex="-1" role="dialog"
+  aria-labelledby="qrcodeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="qrcodeModalLabel">绑定微信</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <img alt="qrcode">
+        <p></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" id="reload" class="btn btn-primary">Reload</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <script>
+    var roles = [];
+    var departments_source = [];
+    function show_add_user() {
+      $('#add_tr').removeAttr('hidden');
+    }
+
+    function show_editor(obj) {
+      var $this = $(obj).parents('tr');
+      var pk = $this.data('id');
+      $this.find('.edit_field').each(function() {
+        var self = $(this);
+        var name = self.data('name');
+        if (name == 'dep_id') {
+          self.editable({
+            url: '/user',
+            pk: pk,
+            source: departments_source,
+          });
+          self.on('save', function(e, params) {
+            self.data('value', params.newValue);
+          });
+        } else if (name == 'role_id') {
+          $(this).editable({
+            url: '/user',
+            pk: pk,
+            source: function() {
+              var dep_id = $this.find("[data-name='dep_id']").data('value');
+              var source = [];
+              $.each(roles, function(i, v) {
+                if (v.superior == dep_id) {
+                  source.push({value: v.id, text: v.name});
+                }
+              });
+              return source;
+            },
+          });
+          self.on('save', function(e, params) {
+            self.data('value', params.newValue);
+          });
+        } else {
+          $(this).editable({
+            url: '/user',
+            pk: pk,
+          });
+        }
+      });
+    }
+
+$(function(){
+  $.getJSON('/departments/roles', function(data) {
+    var deps = {};
+    roles = data.roles;
+    $.each(data.departments, function(i, v) {
+      deps[v.id] = v;
+    });
+    departments_source = [];
+    $.each(data.departments, function(i, v) {
+      var name = [v.name];
+      var superior = v.superior;
+      while (superior && superior != '0') {
+        superior = deps[superior];
+        if (superior) {
+          name.unshift(superior.name);
+          superior = superior.superior;
+        }
+      }
+      var dep = {value: v.id, text: name.join(' - ')};
+      departments_source.push(dep);
+      $('#inputDepId').append('<option value="'+dep.value+'">'+dep.text+'</option>');
+    });
+  });
+  $('#inputDepId').change(function() {
+    var dep_id = $(this).val()
+    $('#inputRoleId').html('<option>角色</option>');
+    $.each(roles, function(i, v) {
+      if (v.superior == dep_id) {
+        $('#inputRoleId').append('<option value="'+v.id+'">'+v.name+'</option>');
+      }
+    });
+  });
+});
+
+$('#qrbindModal').on('show.bs.modal', function (event) {
+  var button = $(event.relatedTarget);
+  var id = $(button).parents('tr').data('id');
+  var qrcode = button.data('src');
+  var modal = $(this);
+  modal.find('.modal-body img').attr('src', qrcode);
+
+  var onbindfail = function () {
+    modal.find('.modal-body p').html("绑定失败, 需要点击关闭, 然后重试");
+  };
+  $.getJSON("/weixin/waitbind", {id:id})
+  .done(function(rv) {
+    if (rv.status === 'ok') {
+      location.href = location.href;
+      return
+    }
+    onbindfail();
+  })
+  .fail(onbindfail);
+});
+$('#reload').on('click', function (event) {
+  location.href = location.href;
+});
+  </script>
+{{end}}

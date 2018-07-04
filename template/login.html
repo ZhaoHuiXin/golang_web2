@@ -1,0 +1,66 @@
+{{import "bootstrap4.html"}}
+{{template "layout" .}}
+
+{{define "custom_css"}}
+<link href="/static/css/signin.css" rel="stylesheet">
+{{end}}
+
+{{define "body"}}
+  <form class="form-signin">
+    <div class="text-center mb-4">
+      <img class="mb-4" src="http://www.autoforce.net/images/sy-top-logo.svg"
+      alt="" width="144" height="144">
+      <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+      <p>yo yo yo</p>
+    </div>
+
+    {{if .eno}}
+    <div class="alert alert-warning" role="alert">
+      哪出错了，或许还没开通账号!{{.eno}}
+    </div>
+    {{end}}
+    <div class="form-label-group">
+      <input type="email" name="email" id="inputEmail" value="{{.email}}"
+      placeholder="Email address" class="form-control" required autofocus>
+      <label for="inputEmail">Email address</label>
+    </div>
+
+    {{if .qrcode}}
+    <div class="form-label-group">
+      <div class="card">
+        <div class="card-header">
+          请扫码认证
+        </div>
+        <div class="card-body">
+          <img class="card-img-top" src="{{.qrcode}}">
+          <div class="alert alert-warning d-none"
+            id="qrauthfail" role="alert">
+            扫码失败, 请点击按钮重试
+          </div>
+          <button class="btn btn-lg btn-secondary btn-block" type="submit">Refresh</button>
+        </div>
+      </div>
+    </div>
+<script>
+  function onauthfail() {
+    $("#qrauthfail").removeClass('d-none');
+  }
+  $.getJSON("/weixin/auth", {email:$('input[name="email"]').val(), tk:'{{.token}}'})
+  .done(function(rv) {
+    if (rv.status === 'ok') {
+      location.href = "/";
+      return
+    }
+    onauthfail();
+  })
+  .fail(onauthfail)
+  .always(function() {
+  });
+</script>
+    {{else}}
+    <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+    {{end}}
+
+    <p class="mt-5 mb-3 text-muted text-center">&copy; 2016-2018</p>
+  </form>
+{{end}}

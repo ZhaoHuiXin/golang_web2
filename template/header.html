@@ -1,0 +1,25 @@
+{{define "header"}}
+<header class="navbar navbar-expand navbar-dark flex-column flex-md-row bd-navbar">
+  <a class="navbar-brand mr-0 mr-md-2" href="/" aria-label="Autoforce">
+    <img src="/static/sy-top-logo.svg" width="36" height="36">
+    车势科技内部系统
+  </a>
+  <div class="navbar-nav-scroll">
+    <ul class="navbar-nav bd-navbar-nav flex-row">
+      {{range .Menus}}
+      <li class="nav-item">
+        <a class="nav-link {{if .Active}}active{{end}}" href="{{.Url}}">{{.Name}}</a>
+      </li>
+      {{end}}
+    </ul>
+  </div>
+  <ul class="navbar-nav flex-row ml-md-auto d-none d-md-flex">
+    <li class="nav-item text-nowrap">
+      <a class="nav-link {{ if $.IsCurrentPath "/settings" }}active{{end}}" href="/settings">Settings</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="/logout">Sign out</a>
+    </li>
+  </ul>
+</header>
+{{end}}

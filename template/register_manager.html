@@ -1,0 +1,196 @@
+{{import "layout.html"}}
+{{template "layout" .}}
+{{define "body"}}
+<style>
+  .prenext {
+    height: 29px;
+    width: 230px;
+    background: transparent  0 -580px no-repeat;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    position: relative;
+  }
+</style>
+<script>
+  function show_wait() {
+    $(window).attr('location','/v1/ixiao/register/manager?cert=1');
+  }
+  function show_pass() {
+    $(window).attr('location','/v1/ixiao/register/manager?cert=2');
+  }
+  function show_refuse() {
+    $(window).attr('location','/v1/ixiao/register/manager?cert=3');
+  }
+
+</script>
+<h1 class="page-header">车易销注册销售管理</h1>
+<h2 class="sub-header">
+  <button id="bwait" type="button" style="background: #343a40" onclick="show_wait()" class="btn btn-secondary btn-sm buttons">
+    待审核
+  </button>
+
+  <button id="bpass" type="button" style="background:#343a40 " onclick="show_pass()" class="btn btn-secondary btn-sm buttons">
+    已通过
+  </button>
+
+  <button id="bfail" type="button" style="background: #343a40" onclick="show_refuse()" class="btn btn-secondary btn-sm buttons">
+    审核失败
+  </button>
+</h2>
+<div class="table-responsive">
+  <table class="table table-striped table-hover">
+    <thead>
+    <tr>
+      <th>编号</th>
+      <th>账号名</th>
+      <th>角色</th>
+      <th>选择的品牌</th>
+      <th>提交时间</th>
+    {{if eq .Data.model 1}}
+      <th></th>
+      <th>操作</th>
+      <th></th>
+    {{else if eq .Data.model 0}}
+      <th>操作</th>
+    {{end}}
+    </tr>
+    </thead>
+    <tbody>
+    {{range .Data.salers}}
+    <tr data-id="{{.Id}}">
+      <td>{{.Id}}</td>
+      <td data-name="username" data-title="账号名" >{{.Username}}</td>
+    {{if eq .Role 1}}
+      <td  data-name="role" data-title="角色">经销店</td>
+    {{else if eq  .Role 2}}
+      <td data-name="role" data-title="角色">经销店销售</td>
+    {{else if eq  .Role 3}}
+      <td data-name="role" data-title="角色">汽车经纪人</td>
+    {{else if eq  .Role 4}}
+      <td data-name="role" data-title="角色">汽车经纪人</td>
+    {{end}}
+      <td data-name="brands" data-title="选择的品牌">{{.Brands}}</td>
+      <td data-name="UpdatedAt" data-title="提交时间">{{.UpdatedAt}}</td>
+      <td>
+        <button type="button"  class="btn btn-link btn-sm">
+          <a href="/v1/ixiao/register/info?saler_id={{.Id}}&cert={{$.Data.cert}}&start={{$.Data.start}}" >
+            资质详情
+          </a>
+        </button>
+      </td>
+    {{if eq $.Data.model 1}}
+      <td>
+        <button type="button" onclick="pass_verify(this)" class="btn btn-link btn-sm">
+          通过
+        </button>
+      </td>
+      <td>
+        <button type="button" onclick="show_reason_editor(this)"  class="btn btn-link btn-sm">
+          驳回
+        </button>
+      </td>
+    {{end}}
+    </tr>
+    <tr class="add_reason" style="display: none;" data-id="{{.Id}}">
+      <td colspan="4">
+        <div class="form-label-group">
+              <textarea class="refuseReason" maxlength="110"
+                        style="width: 200px;height: 200px;resize:none;">请说明驳回原因，不超过100字
+                </textarea>
+        </div>
+        <button id="goRefuse" onclick="refuse_verify(this)" class="btn btn-primary">确定</button>
+        <button id="backRefuse" onclick="cancel_refuse(this)" class="btn btn-primary">取消</button>
+      </td>
+
+    </tr>
+    {{else}}
+    <tr>
+      <td>空空如野</td>
+    </tr>
+    {{end}}
+
+    </tbody>
+  </table>
+  <div class="am-cf">
+    共{{.Data.paginator.totals}}条记录 共记{{.Data.paginator.totalpages}} 页 当前页  {{.Data.paginator.currpage}}
+    <div class="am-fr">
+      <ul class="am-pagination">
+        <li style="float: left;list-style: none;width: 50px;text-align: center"><a href="/v1/ixiao/register/manager?start={{.Data.paginator.firstpage}}&cert={{.Data.cert}}">首页</a></li>
+        <li style="float: left;list-style: none;width: 50px;text-align: center"><a href="/v1/ixiao/register/manager?start={{.Data.paginator.prevpage}}&cert={{.Data.cert}}">上一页</a></li>
+      {{range $index,$page := .Data.paginator.pages}}
+        <li style="float: left;list-style: none;width: 50px;text-align: center" {{if eq $.Data.paginator.currpage $page }}class="am-active"{{end}}><a href="/v1/ixiao/register/manager?start={{$page}}&cert={{$.Data.cert}}">{{$page}}</a></li>
+      {{end}}
+        <li style="float: left;list-style: none;width: 50px;text-align: center"><a href="/v1/ixiao/register/manager?start={{.Data.paginator.nextpage}}&cert={{.Data.cert}}">下一页</a></li>
+        <li style="float: left;list-style: none;width: 50px;text-align: center"><a href="/v1/ixiao/register/manager?start={{.Data.paginator.lastpage}}&cert={{.Data.cert}}">尾页</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+  $(function () {
+    if (({{.Data.cert}})=="1") {
+      $("#bwait").css("background","#e83e8c");
+    }else if(({{.Data.cert}})=="2") {
+      $("#bpass").css("background","#e83e8c");
+    }else if(({{.Data.cert}})=="3") {
+      $("#bfail").css("background","#e83e8c");
+    }
+  });
+  function pass_verify(obj) {
+    var $this = $(obj).parents('tr');
+    var pk = $this.data('id');
+    var name = "cert_code";
+    var value = 2;
+    $.ajax({url:"/v1/ixiao/register/manager/pass",
+      type:"PUT",
+      data:{'name':name,'pk':pk,'value':value},
+      success:function () {
+        console.log("hello!");
+        window.location.reload();
+      }
+    })
+  }
+
+  function refuse_verify(obj) {
+    var $textArea = $(obj).parents('tr').find(".refuseReason");
+    console.log($textArea.val());
+    var $this = $(obj).parents('tr');
+    var pk = $this.data('id');
+    console.log("pk:", pk);
+    var name = "reason";
+    var value = $textArea.val();
+    var reasonText = value.replace(/[\r\n]/g,"").replace(/\ +/g,"");
+    $.ajax({url:"/v1/ixiao/register/manager/back",
+      type:"PUT",
+      data:{'name':name,'pk':pk,'value':reasonText},
+      success:function () {
+        console.log("hello!");
+        window.location.reload();
+        // cancel_refuse(obj);
+      }
+    })
+  }
+
+  function show_reason_editor(obj) {
+    var $this = $(obj).parents('tr').next('tr');
+    if($this.css("display")=="none"){
+      $this.show();
+    }else{
+      $this.hide();
+    }
+  }
+
+  function cancel_refuse(obj) {
+    $(".refuseReason").val("请说明驳回原因，不超过100字");
+    console.log("hello");
+    var $this = $(obj).parents('tr');
+    console.log($this);
+    $this.hide();
+  }
+
+</script>
+{{end}}

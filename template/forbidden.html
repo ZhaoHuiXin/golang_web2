@@ -1,0 +1,22 @@
+{{import "bootstrap4.html"}}
+{{template "layout" .}}
+
+{{define "body"}}
+<div class="container">
+  <div class="row justify-content-md-center">
+    <div class="text-center">
+      <img class="mb-4" src="http://www.autoforce.net/images/sy-top-logo.svg"
+      alt="" width="144" height="144">
+      <h1 class="h3 mb-3 font-weight-normal">您没有获得授权，禁止访问</h1>
+    </div>
+  </div>
+  <div class="row justify-content-md-center">
+    <div class="alert alert-warning" role="alert">
+      如有需要，请向领导部门申请权限!
+    </div>
+  </div>
+  <div class="row justify-content-md-center">
+    <a class="btn btn-primary" href="/" role="button">回首页</a>
+  </div>
+</div>
+{{end}}
